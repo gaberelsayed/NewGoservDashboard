@@ -6,61 +6,93 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import "react-quill/dist/quill.snow.css";
 import "../../ProductsRow.css";
 
-const defaultQuantities = [];
-
 const OptionsModal = ({ isColumn }) => {
   const [showOptionsModal, setShowOptionsModal] = useState(false);
   const [isToggleOn, setIsToggleOn] = useState(false);
   const handleOptionsModalClose = () => setShowOptionsModal(false);
   const handleOptionsModalShow = () => setShowOptionsModal(true);
-  const [options, setOptions] = useState([{ color: "", language: "AR" }]);
-  const addOption = () => {
-    setOptions([...options, { color: "", language: "AR" }]);
-  };
-
-  const [tempColor, setTempColor] = useState("");
-
-  const handleOptionChange = (index, field, value) => {
-    const newOptions = [...options];
-    newOptions[index][field] = value;
-    setOptions(newOptions);
-  };
 
   const [expandedItem, setExpandedItem] = useState(null);
   const handleItemToggle = (color) => {
     setExpandedItem((prev) => (prev === color ? null : color));
   };
 
-  const incrementQuantity = (color) => {};
-
-  const decrementQuantity = (color) => {};
-
-  const [showList, setShowList] = useState(false);
-
-  const addNewOption = () => {
-    setShowDeleteButton(true);
-    setShowList(true);
-    setOptions([
-      ...options,
-      {
-        color: "",
-        language: "AR",
-      },
-    ]);
+  const optionListData = {
+    color: "",
+    value: "",
+    images: [],
+    sizes: {
+      text: "",
+      prices: "",
+      quantity: "",
+    },
   };
 
-  const removeOptionList = () => {
-    setShowList(false);
-    setOptions([]);
+  const handeleSubmit = (e) => {
+    e.preventDefault();
+    optionList.map((item) => {
+      if (
+        item.color == "" ||
+        item.value == "" ||
+        item.images.length == 0 ||
+        item.sizes.text == "" ||
+        item.sizes.prices == "" ||
+        item.sizes.quantity == ""
+      ) {
+        console.log("please add all fields");
+        return;
+      } else {
+        console.log("ok");
+      }
+    });
   };
 
-  const [showDeleteButton, setShowDeleteButton] = useState(false);
-  const removeOptionHeaderList = () => {
-    setShowDeleteButton(false);
+  const [optionList, setOptionList] = useState([optionListData]);
+
+  const deleteList = (i) => {
+    setOptionList(optionList.filter((item, index) => index !== i));
   };
 
   const [unlimited, setUnlimited] = useState(false);
   const [showTotal, setShowTotal] = useState(false);
+
+  const [optiontype, setOPtiontype] = useState("color");
+
+  const handleuploadeImages = (e, index) => {
+    let newoptions = optionList.map((item, i) => {
+      if (i == index) {
+        return { ...item, images: Array.from(e.target.files) };
+      } else {
+        return item;
+      }
+    });
+    setOptionList(newoptions);
+  };
+
+  console.log(optionList);
+
+  const handleOptionChange = (e, index, name) => {
+    let newoptions;
+    if (name == "text" || name == "prices" || name == "quantity") {
+      newoptions = optionList.map((item, i) => {
+        if (i == index) {
+          return { ...item, sizes: { ...item.sizes, [name]: e.target.value } };
+        } else {
+          return item;
+        }
+      });
+      setOptionList(newoptions);
+    } else {
+      newoptions = optionList.map((item, i) => {
+        if (i == index) {
+          return { ...item, [name]: e.target.value };
+        } else {
+          return item;
+        }
+      });
+      setOptionList(newoptions);
+    }
+  };
 
   return (
     <>
@@ -151,211 +183,258 @@ const OptionsModal = ({ isColumn }) => {
           </div>
           {isToggleOn && (
             <div>
-              <div
-                className="option-list"
-                style={{ backgroundColor: "rgba(0,0,0,3%)" }}
-              >
-                <div className="option-container toggleheader-section">
-                  <div className="right-toggleHeader">
-                    <i
-                      className="sicon-type-square"
-                      style={{ color: "#aaa", paddingRight: "7px" }}
-                    ></i>
-                    <input
-                      type="text"
-                      className="option-input"
-                      placeholder="اللون"
-                      style={{ marginRight: "0px", border: "none" }}
-                    />
-                    <select
-                      className="option-select"
-                      style={{ border: "none" }}
-                    >
-                      <option value="AR">AR</option>
-                      <option value="EN">EN</option>
-                    </select>
-                  </div>
+              <form>
+                {optionList.map((option, i) => (
                   <div
-                    className="left-toggleHeader"
-                    style={{ position: "relative" }}
+                    key={i}
+                    className="option-list"
+                    style={{ backgroundColor: "rgba(0,0,0,3%)" }}
                   >
-                    <div
-                      className="iconSelectclass"
-                      style={{
-                        border: "1px solid #ddd",
-                        backgroundColor: "#ffff",
-                      }}
-                    >
-                      <i
-                        className="sicon-file-partial"
-                        style={{
-                          position: "absolute",
-                          top: 20,
-                          right: 30,
-                          color: "#aaa",
-                        }}
-                      ></i>
-                      <select
-                        className="option-select"
-                        style={{ border: "none" }}
-                      >
-                        <option>نص</option>
-                        <option>اللون</option>
-                        <option>الصورة</option>
-                      </select>
-                    </div>
-
-                    {showDeleteButton && (
-                      <button
-                        onClick={removeOptionHeaderList}
-                        className="delete-button-list"
-                      >
-                        <i className="icon sicon-trash-2"></i>
-                      </button>
-                    )}
-                  </div>
-                </div>
-                {options.map((option, index) => (
-                  <div key={index} style={{ display: "flex" }}>
-                    <div className="option-container-body">
-                      <div className="option-input-body">
+                    <div className="option-container toggleheader-section">
+                      <div className="right-toggleHeader">
                         <i
                           className="sicon-type-square"
                           style={{ color: "#aaa", paddingRight: "7px" }}
                         ></i>
                         <input
                           type="text"
-                          placeholder="القيمة"
-                          onChange={(e) => setTempColor(e.target.value)}
-                          onBlur={(e) => {
-                            handleOptionChange(index, "color", e.target.value);
-                          }}
-                          onFocus={() => setTempColor(option.color)}
+                          className="option-input"
+                          placeholder="اللون"
+                          style={{ marginRight: "0px", border: "none" }}
+                          value={optionList[i].color}
+                          onChange={(e) => handleOptionChange(e, i, "color")}
+                          required
                         />
-                      </div>
-
-                      <select
-                        className="option-select-body"
-                        style={{ border: "none" }}
-                      >
-                        <option value="AR">AR</option>
-                        <option value="EN">EN</option>
-                      </select>
-                    </div>
-                    <button className="delete-button-body">
-                      <i className="icon sicon-trash-2"></i>
-                    </button>
-                  </div>
-                ))}
-                <button onClick={addOption} className="add-option-button">
-                  <span className="plus-icon">+</span> إضافة قيمة جديدة
-                </button>
-              </div>
-              {showList && (
-                <div
-                  className="option-list"
-                  style={{ backgroundColor: "rgba(0,0,0,3%)" }}
-                >
-                  <div className="option-container toggleheader-section">
-                    <div className="right-toggleHeader">
-                      <i
-                        className="sicon-type-square"
-                        style={{ color: "#aaa", paddingRight: "7px" }}
-                      ></i>
-                      <input
-                        type="text"
-                        className="option-input"
-                        placeholder="اللون"
-                        style={{ marginRight: "0px", border: "none" }}
-                      />
-                      <select
-                        className="option-select"
-                        style={{ border: "none" }}
-                      >
-                        <option value="AR">AR</option>
-                        <option value="EN">EN</option>
-                      </select>
-                    </div>
-                    <div
-                      className="left-toggleHeader"
-                      style={{ position: "relative" }}
-                    >
-                      <div
-                        className="iconSelectclass"
-                        style={{
-                          border: "1px solid #ddd",
-                          backgroundColor: "#ffff",
-                        }}
-                      >
-                        <i
-                          className="sicon-file-partial"
-                          style={{
-                            position: "absolute",
-                            top: 20,
-                            right: 30,
-                            color: "#aaa",
-                          }}
-                        ></i>
                         <select
                           className="option-select"
-                          style={{ border: "none" }}
-                        >
-                          <option>نص</option>
-                          <option>اللون</option>
-                          <option>الصورة</option>
-                        </select>
-                      </div>
-                      {showList && (
-                        <button
-                          onClick={removeOptionList}
-                          className="delete-button-list"
-                        >
-                          <i className="icon sicon-trash-2"></i>
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  {options.map((option, index) => (
-                    <div key={index} style={{ display: "flex" }}>
-                      <div className="option-container-body">
-                        <div className="option-input-body">
-                          <i
-                            className="sicon-type-square"
-                            style={{ color: "#aaa", paddingRight: "7px" }}
-                          ></i>
-                          <input
-                            type="text"
-                            placeholder="القيمة"
-                            value={option.color}
-                            onChange={(e) =>
-                              handleOptionChange(index, "color", e.target.value)
-                            }
-                          />
-                        </div>
-
-                        <select
-                          className="option-select-body"
                           style={{ border: "none" }}
                         >
                           <option value="AR">AR</option>
                           <option value="EN">EN</option>
                         </select>
                       </div>
-                      <button className="delete-button-body">
-                        <i className="icon sicon-trash-2"></i>
-                      </button>
+                      <div
+                        className="left-toggleHeader"
+                        style={{ position: "relative" }}
+                      >
+                        <div
+                          className="iconSelectclass"
+                          style={{
+                            border: "1px solid #ddd",
+                            backgroundColor: "#ffff",
+                          }}
+                        >
+                          <i
+                            className="sicon-file-partial"
+                            style={{
+                              position: "absolute",
+                              top: 20,
+                              right: 30,
+                              color: "#aaa",
+                            }}
+                          ></i>
+                          <select
+                            className="option-select"
+                            style={{ border: "none" }}
+                            onChange={(e) => setOPtiontype(e.target.value)}
+                          >
+                            <option
+                              selected={"color" == optiontype}
+                              value="color"
+                            >
+                              اللون
+                            </option>
+                            <option
+                              value="sizes"
+                              selected={"sizes" == optiontype}
+                            >
+                              المقاسات
+                            </option>
+                            <option
+                              value="images"
+                              selected={"images" == optiontype}
+                            >
+                              الصور
+                            </option>
+                          </select>
+                        </div>
+
+                        <button
+                          className="delete-button-list"
+                          onClick={() => deleteList(i)}
+                        >
+                          <i className="icon sicon-trash-2"></i>
+                        </button>
+                      </div>
                     </div>
-                  ))}
+                    {optiontype == "color" && (
+                      <div style={{ display: "flex" }}>
+                        <div className="option-container-body">
+                          <div className="option-input-body">
+                            <i
+                              className="sicon-type-square"
+                              style={{ color: "#aaa", paddingRight: "7px" }}
+                            ></i>
+                            <input
+                              type="text"
+                              placeholder="القيمة"
+                              value={optionList[i].value}
+                              onChange={(e) =>
+                                handleOptionChange(e, i, "value")
+                              }
+                              required
+                            />
+                          </div>
 
-                  <button onClick={addNewOption} className="add-option-button">
-                    <span className="plus-icon">+</span> إضافة قيمة جديدة
-                  </button>
-                </div>
-              )}
+                          <select
+                            className="option-select-body"
+                            style={{ border: "none" }}
+                          >
+                            <option value="AR">AR</option>
+                            <option value="EN">EN</option>
+                          </select>
+                        </div>
+                      </div>
+                    )}
+                    {optiontype == "sizes" && (
+                      <div className="container">
+                        <div style={{ display: "flex" }}>
+                          <div className="option-container-body">
+                            <div className="option-input-body">
+                              <i
+                                className="sicon-type-square"
+                                style={{ color: "#aaa", paddingRight: "7px" }}
+                              ></i>
+                              <input
+                                type="text"
+                                placeholder="المقاسات"
+                                value={optionList[i].sizes.text}
+                                onChange={(e) =>
+                                  handleOptionChange(e, i, "text")
+                                }
+                                required
+                              />
+                            </div>
 
-              <button onClick={addNewOption} className="addNewOption">
-                <span className="plus-icon">+</span> إضافة خيار جديد
-              </button>
+                            <select
+                              className="option-select-body"
+                              style={{ border: "none" }}
+                            >
+                              <option value="AR">AR</option>
+                              <option value="EN">EN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                          <div className="option-container-body">
+                            <div className="option-input-body">
+                              <i
+                                className="sicon-type-square"
+                                style={{ color: "#aaa", paddingRight: "7px" }}
+                              ></i>
+                              <input
+                                type="text"
+                                placeholder="الاسعار"
+                                value={optionList[i].sizes.prices}
+                                onChange={(e) =>
+                                  handleOptionChange(e, i, "prices")
+                                }
+                                required
+                              />
+                            </div>
+
+                            <select
+                              className="option-select-body"
+                              style={{ border: "none" }}
+                            >
+                              <option value="AR">AR</option>
+                              <option value="EN">EN</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex" }}>
+                          <div className="option-container-body">
+                            <div className="option-input-body">
+                              <i
+                                className="sicon-type-square"
+                                style={{ color: "#aaa", paddingRight: "7px" }}
+                              ></i>
+                              <input
+                                type="text"
+                                placeholder="الكمية"
+                                name="quantity"
+                                value={optionList[i].sizes.quantity}
+                                onChange={(e) =>
+                                  handleOptionChange(e, i, "quantity")
+                                }
+                              />
+                            </div>
+
+                            <select
+                              className="option-select-body"
+                              style={{ border: "none" }}
+                            >
+                              <option value="AR">AR</option>
+                              <option value="EN">EN</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {optiontype == "images" && (
+                      <div className="option-container-body d-flex flex-col">
+                        <div className="image-upload-area w-full">
+                          <input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            style={{ display: "none" }}
+                            id="file-input"
+                            onChange={(e) => handleuploadeImages(e, i)}
+                            required
+                          />
+                          <label
+                            htmlFor="file-input"
+                            style={{ cursor: "pointer" }}
+                          >
+                            <div className="upload-button">
+                              <p>اسحب الصورة وأفلتها هنا</p>
+                              <p> او تصفح من جهازك</p>
+                            </div>
+                          </label>
+                        </div>
+                        <div className="uploaded-images-container d-flex">
+                          {option.images?.map((image, index) => (
+                            <div key={index} className="uploaded-image">
+                              <img
+                                src={URL.createObjectURL(image)}
+                                alt={`Uploaded ${index + 1}`}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <button
+                  className="addNewOption"
+                  type="submit"
+                  onClick={() =>
+                    setOptionList((prev) => [...prev, optionListData])
+                  }
+                >
+                  <span className="plus-icon">+</span> إضافة خيار جديد
+                </button>
+                <button
+                  className="addNewOption"
+                  type="submit"
+                  onClick={(e) => handeleSubmit(e)}
+                >
+                  <span className="plus-icon">+</span> إضافة خيار جديد
+                </button>
+              </form>
 
               <Form className="mt-5 quantitiesClass">
                 <Form.Group className="mb-3">
@@ -567,7 +646,6 @@ const OptionsModal = ({ isColumn }) => {
                                 className="btn btn-light"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  decrementQuantity(item.color);
                                 }}
                               >
                                 -
@@ -577,7 +655,6 @@ const OptionsModal = ({ isColumn }) => {
                                 className="btn btn-light"
                                 onClick={(e) => {
                                   e.preventDefault();
-                                  incrementQuantity(item.color);
                                 }}
                               >
                                 +
