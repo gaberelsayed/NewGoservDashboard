@@ -8,7 +8,7 @@ import Orders from "./pages/Orders/Orders";
 import Clients from "./pages/Clients/Clients";
 import Reports from "./pages/Reports/Reports";
 import Mahally from "./pages/Mahally/Mahally";
-import Influencers from "./pages/Influencers/Influencers";
+import Influencers from "./pages/Influencers/Influencers";    
 import Experts from "./pages/Experts/Experts";
 import Sweply from "./pages/Sweply/Sweply";
 import Marketplace from "./pages/Marketplace/Marketplace";
